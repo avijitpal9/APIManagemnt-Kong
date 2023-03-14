@@ -39,7 +39,8 @@ services:
     host: sum
   - name: div
     protocol: http
-    host: div
+    host: 127.0.0.1
+    port: 6001
 
 routes:
   - name: sum
@@ -56,93 +57,6 @@ routes:
 upstreams:
   - name: sum
     targets:
-      - target: 127.0.0.1:5000
       - target: 127.0.0.1:5001
-
-  - name: div
-    targets:
       - target: 127.0.0.1:5002
 
-consumers:
-  - username: admin
-  - username: hruser
-
-plugins:
-  - name: key-auth
-    service: sum
-    config: 
-      key_in_header: true
-      key_in_query: false
-      key_in_body: false
-      key_names:
-      - apikey
-  - name: ip-restriction
-    service: sum
-    config:
-      status: 403
-      message: "Your IP address is not allowed to access" 
-      allow:
-      - 127.0.0.1
-  - name: acl
-    service: sum
-    config: 
-      allow:
-      - admin
-  - name: rate-limiting
-    service: sum
-    config: 
-      minute: 5
-      hour: 100
-      limit_by: consumer
-      policy: local
-      error_code: 429
-      error_message: "rate limit exceeded for API"
-  - name: response-transformer
-    service: sum
-    config:
-      add:
-        json:
-        - proxy:request served by Kong
-
-keyauth_credentials:
-  - consumer: admin
-    key: "admin123"
-  - consumer: hruser
-    key: "hruser123"
-
-acls:
-  - consumer: admin
-    group: admin
-  - consumer: hruser
-    group: hr
-
-# consumers:
-# - username: example-user
-#   # Custom entities from plugin can also be specified
-#   # If they specify a foreign-key relationshp, they can also be nested
-#   keyauth_credentials:
-#   - key: my-key
-#   plugins:
-#   - name: rate-limiting
-#     _comment: "these are default rate-limits for user example-user"
-#     config:
-#       policy: local
-#       second: 5
-#       hour: 10000
-
-# When an entity has multiple foreign-key relationships
-# (e.g. a plugin matching on both consumer and service)
-# it must be specified as a top-level entity, and not through
-# nesting.
-
-# plugins:
-# - name: rate-limiting
-#   consumer: example-user
-#   service: another-service
-#   _comment: "example-user is extra limited when using another-service"
-#   config:
-#     hour: 2
-#   # tags are for your organization only and have no meaning for Kong:
-#   tags:
-#   - extra_limits
-#   - my_tag
