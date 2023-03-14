@@ -66,7 +66,6 @@ consumers:
 
 plugins:
   - name: key-auth
-    service: sum
     config: 
       key_in_header: true
       key_in_query: false
@@ -81,12 +80,12 @@ plugins:
       allow:
       - 127.0.0.1
   - name: acl
-    service: sum
     config: 
       allow:
       - admin
+      - hr
   - name: rate-limiting
-    service: sum
+    consumer: hruser
     config: 
       minute: 5
       hour: 100
@@ -94,12 +93,6 @@ plugins:
       policy: local
       error_code: 429
       error_message: "rate limit exceeded for API"
-  - name: response-transformer
-    service: sum
-    config:
-      add:
-        json:
-        - proxy:request served by Kong
 
 keyauth_credentials:
   - consumer: admin
