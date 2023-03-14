@@ -29,3 +29,12 @@ API Management Using Kong
   * flask --app calc_api/src/sumV2/app.py run --port=5002  
   * flask --app calc_api/src/divV1/app.py run --port=6001
 
+
+#### Ordering
+- load-balancing
+- key-authentication
+- ip-restriction
+- acl
+- rate-limiting
+- response-transformer
+
